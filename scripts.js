@@ -2,18 +2,20 @@ const input = document.getElementById("input");
 const output = document.getElementById("output");
 const preview = document.getElementById("preview");
 const previewContainer = document.getElementById("preview-container");
-
 const copyButton = document.getElementById("copy");
 
+// Automatically run parser when input is updated.
 input.addEventListener("input", parseJson);
 
+// Some auto-generated intro text to give context about where these posts are coming from.
 function createIntro(json) {
 	let intro = document.createElement("p");
 	intro.innerText = `This post is scraped text from an external Discourse thread titled "${json.title}".`;
-
 	return intro;
 }
 
+// From a single user post, create a quote box with the relevant information about that post.
+// These will be concatenated together as a single post of quotes.
 function createQuote(who, when, post) {
 	// filter out empty posts
 	if (!post) { return null }
@@ -37,6 +39,7 @@ function createQuote(who, when, post) {
 	return aside;
 }
 
+// Go through the JSON loaded in the page, and try to turn it into well formatted HTML.
 function parseJson() {
 	output.innerHTML = null;
 	preview.innerHTML = null;
@@ -68,13 +71,39 @@ function parseJson() {
 		}
 	}
 
+	removeOneBoxes();
+
 	output.innerText = "Parsed successfully!"
 	previewContainer.style.display = "block";
 }
 
+// This function finds Discourse Oneboxes, and turns them back into normal links.
+// Formatting of the onebox did not look good when putting HTML back through the parser in the forum.
+function removeOneBoxes() {
+	let boxes = document.getElementsByClassName("onebox");
+
+	for (box of boxes) {
+		let url = box.getAttribute("data-onebox-src");
+		if (url) {
+			// Replace the onebox html with a simple link.
+			box.outerHTML = `<p><a href='${url}'>${url}</a></p>`;
+		}
+	}
+}
+
 // Copies the "preview" html to the clipboard.
+// Attempts to make the HTML well formatted with `html_beautify`.
 function copyToClipboard() {
-	navigator.clipboard.writeText(preview.innerHTML)
+	let output = preview.innerHTML;
+	if (html_beautify) {
+
+		let options = {
+			"max_preserve_newlines": "-1",
+			"preserve_newlines": false,
+		};
+		output = html_beautify(output, options);
+	}
+	navigator.clipboard.writeText(output)
 		.then(
 			function () {
 				output.innerText = "Successfully copied to clipboard!";
@@ -85,4 +114,5 @@ function copyToClipboard() {
 			});
 }
 
+// Run the script on startup.
 parseJson()
