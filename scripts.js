@@ -14,7 +14,7 @@ function createIntro(json) {
 	return intro;
 }
 
-function createQuote(who, post) {
+function createQuote(who, when, post) {
 	// filter out empty posts
 	if (!post) { return null }
 
@@ -24,7 +24,7 @@ function createQuote(who, post) {
 
 	let title = document.createElement("div");
 	title.setAttribute("class", "title");
-	title.innerText = `${who}:`
+	title.innerText = `${who} on ${when}:`
 
 	let content = document.createElement("blockquote");
 	content.setAttribute("class", "quote no-group");
@@ -61,7 +61,8 @@ function parseJson() {
 	preview.appendChild(intro);
 
 	for (post of posts) {
-		let quote = createQuote(post.name, post.cooked);
+		let date = new Date(post.created_at);
+		let quote = createQuote(post.name, date.toDateString(), post.cooked);
 		if (quote) {
 			preview.appendChild(quote);
 		}
