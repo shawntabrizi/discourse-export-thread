@@ -10,7 +10,7 @@ input.addEventListener("input", parseJson);
 // Some auto-generated intro text to give context about where these posts are coming from.
 function createIntro(json) {
 	let intro = document.createElement("p");
-	intro.innerText = `This post is scraped text from an external Discourse thread titled "${json.title}".`;
+	intro.innerText = `This conversation was extracted from an external Discourse thread titled "${json.title}".`;
 	return intro;
 }
 
